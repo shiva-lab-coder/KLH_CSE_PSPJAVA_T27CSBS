@@ -1,19 +1,26 @@
 PROJECT TITLE: CINEMA SEAT BOOKING SYSTEM
+
 TEAM NUMBER: KLH/PSPJAVA/S5/T29
+
 TEAM MEMBERS WITH ID NUMBERS:
-1. 2620030194- M SHIVA SAI
+
+1. 2620030194- M SHIVA SAI  
 2. 2620090051-B.VNSSMSK KARTHIK
- 
+
 SUPERVISOR’S NAME: BALAIAH GUDIPUDI
+
 ABSTARCT:
 
+The Cinema Seat Booking System is a Java-based console application developed to simplify the process of booking cinema tickets. The system allows users to view available movies along with their ticket prices, select a movie, choose a preferred showtime, and select a seat from the available seat range. It also includes a coupon-code feature that provides a discount when a valid coupon is entered.
 
+The application calculates the final ticket price after applying the discount and generates a movie bill containing the selected movie, base price, discount, total amount paid, GST information, and seat number. The system uses fundamental Java programming concepts such as **arrays, loops, conditional statements, switch-case statements, string handling, user input using the Scanner class, and arithmetic operations**.
 
+The main objective of this project is to demonstrate how basic Java programming concepts can be combined to develop a simple, practical, and user-friendly real-world application for cinema ticket booking.
 
+**PROJECT STRUCTURE:**
 
-
-PROJECT STRUCTURE:
 • CODE:
+
 import java.util.Scanner;
 
 public class CinemaSeatBookingSystem
@@ -150,3 +157,8 @@ public class CinemaSeatBookingSystem
         mb.close();
     }
 }
+
+
+
+
+
