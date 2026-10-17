@@ -22,139 +22,208 @@ PROJECT STRUCTURE:
 • CODE:
 
 ```java
-import java.util.Scanner;
+import java.util.*;
+import java.nio.file.*;
+import java.io.IOException;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-public class CinemaSeatBookingSystem
+interface Billable                                                                             //CO4 COVERED
 {
-public static void main(String[] args)
-{
-Scanner mb = new Scanner(System.in);
-
-    String[] movieNames = {"Dune Part 3","Avengers Doomsday","The Paradise","Salaar 2"};      
-
-    int[] moviePrices = {250, 350, 460, 370};
-
-    System.out.println("===========MOVIES STREAMING NOW==========");
-
-    for (int i = 0; i < movieNames.length; i++)                                            //CO3 COVERED 
-    {
-        System.out.println((i + 1) + ". " + movieNames[i] + " - price : Rs." + moviePrices[i]);
-    }
-
-    System.out.print("Enter the movie number (1-4) :");
-    int moviename = mb.nextInt();
-
-    mb.nextLine();
-
-    System.out.print("Enter the Copoun Code : ");
-    String CoupounCode = mb.nextLine();                                                    //CO1 COVERED
-
-    int discount = 0;
-
-    if (CoupounCode.equals("ILOVEU143"))
-    {
-        discount = 100;
-        System.out.println("Success! Coupon applied. Rs."
-                + discount + " discount applied.");
-    }
-    else
-    {
-        System.out.println("No valid coupon applied.");
-    }
-
-    String finalMovie = "";
-    int price = 0;
-
-    switch (moviename)
-    {
-        case 1:
-            finalMovie = movieNames[0];
-            price = moviePrices[0];
-            System.out.println("Selected movie : " + finalMovie);
-            break;
-
-        case 2:
-            finalMovie = movieNames[1];                                                    //CO2 COVERED
-            price = moviePrices[1];
-            System.out.println("Selected movie : " + finalMovie);
-            break;
-
-        case 3:
-            finalMovie = movieNames[2];
-            price = moviePrices[2];
-            System.out.println("Selected movie : " + finalMovie);
-            break;
-
-        case 4:
-            finalMovie = movieNames[3];
-            price = moviePrices[3];
-            System.out.println("Selected movie : " + finalMovie);
-            break;
-
-        default:
-            System.out.println("invalid movie name");
-            
-    }
-
-    System.out.println("========== SHOWTIME =========");
-    System.out.println("1. MORNING");
-    System.out.println("2. EVENING");
-
-    System.out.print("Enter the showtime: ");
-    int showtime = mb.nextInt();
-
-    switch (showtime)
-    {
-        case 1:
-            System.out.println("Selected Showtime : MORNING");
-            break;
-
-        case 2:
-            System.out.println("Selected Showtime : EVENING");
-            break;
-
-        default:
-            System.out.println("Invalid Showtime");
-        
-    }
-
-    System.out.print("Select seat number (1-40): ");
-    int m = mb.nextInt();
-
-    if (m > 0 && m <= 40)
-    {
-        System.out.println("Your booking confirmed!");
-        System.out.println("Enjoy your show.\n");
-    }
-    else
-    {
-        System.out.println("Invalid seat.");
-        
-    }
-
-    int finalPrice = price - discount;
-
-    if (finalPrice < 0)
-    {
-        finalPrice = 0;
-    }
-    
-    System.out.println("===========Movie Bill============");
-    System.out.println("Movie name : " + finalMovie);
-    System.out.println("Base Price : Rs." + price);
-
-    if (discount > 0)
-    {
-        System.out.println("Discount   : Rs." + discount);
-    }
-
-    System.out.println("Total Paid : Rs." + finalPrice);
-    System.out.println("GST : 1.4%");
-    System.out.println("Seat no : " + m);
-
-    System.out.println("==========Thank You Visit Again ==========");
-
-    mb.close();
+    double calculateBill();             
 }
+
+class Movie implements Comparable<Movie> 
+{
+    private String name;
+    private double price;
+    private String showTime;
+
+    Movie(String name, double price, String showTime) 
+    {
+        this.name = name;
+        this.price = price;
+        this.showTime = showTime;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public double getPrice() 
+    {
+        return price;
+    }
+
+    public String getShowTime() 
+    {
+        return showTime;
+    }
+
+    @Override
+    public int compareTo(Movie m) 
+    {
+        return name.compareToIgnoreCase(m.name);
+    }
+
+    @Override
+    public String toString() 
+    {
+        return name + " - Rs." + price + " - " + showTime;
+    }
+}
+
+class Booking implements Billable 
+{
+    private static int count = 0;
+    private int id;
+    private Movie movie;
+    private List<Integer> seats;
+    private double discount;
+
+    Booking(Movie movie, List<Integer> seats, double discount) 
+    {
+        this.id = ++count;
+        this.movie = movie;
+        this.seats = new ArrayList<>(seats);
+        this.discount = discount;
+    }
+
+    @Override
+    public double calculateBill()                                                             //CO3 COVERED
+    {
+        return Math.max(0, movie.getPrice() * seats.size() - discount);
+    }
+
+    public String toString() 
+    {
+        return "Booking ID: " + id + "\nMovie: " + movie.getName()
+            + "\nShow Time: " + movie.getShowTime()
+            + "\nSeats: " + String.join(", ",
+                seats.stream().map(String::valueOf)
+                .collect(Collectors.toList()))
+            + "\nTickets: " + seats.size()
+            + "\nDiscount: Rs." + discount
+            + "\nFinal Amount: Rs." + calculateBill();
+    }
+}
+
+public class CinemaSeatBookingSystem 
+{
+    public static void main(String[] args) 
+    {
+        Scanner sc = new Scanner(System.in);
+        List<Movie> movies = new ArrayList<>();                                               //CO6 COVERED                
+        List<Booking> bookings = new ArrayList<>();
+        Set<Integer> selectedSeats = new HashSet<>();
+        Map<Integer, Booking> bookingMap = new HashMap<>();
+        Path file = Paths.get("bookings.txt");
+
+        movies.add(new Movie("Dune Part 3", 250, "10:00 AM"));
+        movies.add(new Movie("Avengers Doomsday", 350, "1:00 PM"));
+        movies.add(new Movie("The Paradise", 460, "4:00 PM"));
+        movies.add(new Movie("Salaar 2", 370, "7:00 PM"));
+
+        try {
+            System.out.println("======= MOVIES =======");
+
+            for (int i = 0; i < movies.size(); i++) 
+            {
+                System.out.println((i + 1) + ". " + movies.get(i));
+            }
+
+            System.out.print("Choose a movie (1-4): ");
+            int choice = Integer.parseInt(sc.nextLine());
+
+            if (choice < 1 || choice > movies.size())
+                throw new IllegalArgumentException("Invalid movie choice.");
+
+            Movie selected = movies.get(choice - 1);
+            System.out.println("Selected Movie: " + selected.getName());
+
+            System.out.print("Enter number of seats (1-40): ");
+            int numberOfSeats = Integer.parseInt(sc.nextLine());
+
+            if (numberOfSeats < 1 || numberOfSeats > 40)                                     //CO2 COVERED
+            {
+                throw new IllegalArgumentException("Enter 1 to 40 seats.");
+            }
+
+            System.out.println("Show Time: " + selected.getShowTime());
+            System.out.print("Enter coupon code (or NONE): ");
+            String coupon = sc.nextLine().trim().toUpperCase();                              //CO5 COVERED
+            double discount = coupon.equals("ILOVEU143") ? 100 : 0;
+
+            for (int i = 1; i <= numberOfSeats; i++) 
+            {
+                System.out.print("Enter seat number (1-40): ");
+                int seat = Integer.parseInt(sc.nextLine());
+
+                if (seat < 1 || seat > 40) 
+                {
+                    throw new IllegalArgumentException("Invalid seat number.");
+                }
+
+                if (!selectedSeats.add(seat)) 
+                {
+                    throw new IllegalArgumentException("Seat already selected.");
+                }
+            }
+
+            List<Integer> seats = new ArrayList<>(selectedSeats);
+            seats.sort(Integer::compareTo);
+
+            Booking booking = new Booking(selected, seats, discount);
+            bookings.add(booking);
+            bookingMap.put(bookings.size(), booking);
+
+            System.out.println("\n======= BOOKING RECEIPT =======");
+            System.out.println(booking);
+            System.out.println("GST: 1.4% (display only)");
+
+            Files.writeString(file, booking + System.lineSeparator(),
+                StandardOpenOption.CREATE,
+                StandardOpenOption.APPEND);
+
+            System.out.println("\n======= BOOKING REPORT =======");
+            Predicate<Booking> valid = b -> b.calculateBill() >= 0;
+
+            bookings.stream()
+                .filter(valid)
+                .map(Booking::toString)
+                .forEach(System.out::println);
+
+            double total = bookings.stream()
+                .mapToDouble(Booking::calculateBill)
+                .sum();
+
+            System.out.println("Total Collection: Rs." + total);
+
+            Collections.sort(movies);
+            System.out.println("\nMovies sorted alphabetically:");
+            movies.forEach(System.out::println);
+
+            System.out.println("Booking saved to bookings.txt");
+
+        } 
+        catch (NumberFormatException e) 
+        {
+            System.out.println("Error: Enter numbers only.");                              //CO1 COVERED
+        } 
+        catch (IllegalArgumentException e)                                           
+        {
+            System.out.println("Error: " + e.getMessage());
+        } 
+        catch (IOException e) 
+        {
+            System.out.println("File error: " + e.getMessage());
+        } 
+        finally 
+        {
+            sc.close();
+            System.out.println("Thank you! Visit again.");
+        }
+    }
 }
 ```
