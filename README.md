@@ -11,11 +11,13 @@ SUPERVISOR’S NAME: BALAIAH GUDIPUDI
 
 ABSTARCT:
 
-The Cinema Seat Booking System is a Java-based console application developed to simplify the process of booking cinema tickets. The system allows users to view available movies along with their ticket prices, select a movie, choose a preferred showtime, and select a seat from the available seat range. It also includes a coupon-code feature that provides a discount when a valid coupon is entered.
+The Cinema Seat Booking System is a Java-based console application developed to simplify cinema ticket booking and billing operations. The application displays a list of movies along with their ticket prices and showtimes, allowing users to select a movie, specify the number of tickets, and enter their preferred seat numbers within the range of 1 to 40. It also provides a coupon-code feature that offers a discount of ₹100 when a valid coupon code is entered.
 
-The application calculates the final ticket price after applying the discount and generates a movie bill containing the selected movie, base price, discount, total amount paid, GST information, and seat number. The system uses fundamental Java programming concepts such as "arrays, loops, conditional statements, switch-case statements, string handling, user input using the Scanner class, and arithmetic operations".
+The system calculates the final booking amount based on the selected movie's ticket price, the number of seats, and the applicable discount. It generates a booking receipt containing the booking ID, movie name, showtime, selected seat numbers, ticket count, discount, and final payable amount. The application also displays GST information, stores booking receipts in a text file, generates a booking report, calculates the total collection, and sorts movies alphabetically.
 
-The main objective of this project is to demonstrate how basic Java programming concepts can be combined to develop a simple, practical, and user-friendly real-world application for cinema ticket booking.
+This project demonstrates several Java programming concepts, including classes and objects, interfaces, the Comparable interface, exception handling, file handling, and the Java Collections Framework using List, Set, and Map. It also utilizes lambda expressions, the Stream API, the Predicate functional interface, and string handling to process booking information and perform billing operations efficiently.
+
+The main objective of this project is to demonstrate the practical application of core Java programming concepts in developing a simple and user-friendly cinema ticket booking system. The application operates as a standalone console program without external APIs or database connectivity, using Java's built-in libraries and text-file storage to manage booking records.
 
 PROJECT STRUCTURE:
 
